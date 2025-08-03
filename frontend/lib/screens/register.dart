@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'login.dart';
+import 'package:healthhabit/models/user_profile.dart';
+import 'package:healthhabit/services/api_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -24,38 +26,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() => _isLoading = true);
       try {
         final prefs = await SharedPreferences.getInstance();
-        final age = prefs.getInt('temp_age') ?? 0;
-        final fitnessGoals = prefs.getString('temp_fitnessGoals') ?? '';
-        final dietaryPreferences =
-            prefs.getString('temp_dietaryPreferences') ?? '';
+        final age = prefs.getInt('temp_age');
+        final fitnessGoals = prefs.getString('temp_fitnessGoals');
+        final dietaryPreferences = prefs.getString('temp_dietaryPreferences');
+
+        final profile = UserProfile(
+          age: age,
+          fitnessGoals: fitnessGoals,
+          dietaryPreferences: dietaryPreferences,
+          healthPoints: 0,
+        );
+
+        final user = User(
+          email: _emailController.text,
+          password: _passwordController.text,
+          profile: profile,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
 
         final response = await http.post(
-          Uri.parse(
-            'http://localhost:5000/api/auth/register',
-          ), // Correct endpoint
+          Uri.parse('https://healthhabit.onrender.com/api/auth/register'),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'email': _emailController.text,
-            'password': _passwordController.text,
-            'profile': {
-              'age': age,
-              'fitnessGoals': fitnessGoals,
-              'dietaryPreferences': dietaryPreferences,
-            },
-          }),
+          body: jsonEncode(user.toJson()),
         );
 
         if (mounted) {
           if (response.statusCode == 201) {
             final data = jsonDecode(response.body);
             final token = data['token'];
-            final prefs = await SharedPreferences.getInstance();
+            final userId = data['userId'] ?? data['_id'];
             await prefs.setString('auth_token', token);
-            await prefs.setString('userId', data['userId']);
-            // Clear temporary profile data
+            await prefs.setString('userId', userId);
             await prefs.remove('temp_age');
             await prefs.remove('temp_fitnessGoals');
             await prefs.remove('temp_dietaryPreferences');
+
+           
+            final goalsData = await ApiService.fetchGoals();
+            final badgesData = await ApiService.fetchBadges();
+            final goal = goalsData.isNotEmpty ? Goal.fromJson(goalsData) : null;
+            final badges = badgesData is List
+                ? badgesData.map((b) => Badge.fromJson(b)).toList()
+                : [Badge.fromJson(badgesData as Map<String, dynamic>)];
+            await prefs.setString('currentGoal', jsonEncode(goal?.toJson() ?? {}));
+            await prefs.setString('badges', jsonEncode(badges.map((b) => b.toJson()).toList()));
 
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -216,20 +231,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _handleRegister,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(
-                                    0xFF64B39A,
-                                  ), // Soft Green
+                                  backgroundColor: const Color(0xFF64B39A),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 4,
-                                  shadowColor: const Color(
-                                    0xFF2D7868,
-                                  ), // Deep Green
+                                  shadowColor: const Color(0xFF2D7868),
                                 ),
                                 child: _isLoading
                                     ? const SizedBox(
@@ -238,9 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
                                           valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
+                                              AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
                                       )
                                     : const Text(
@@ -263,21 +270,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (_) => const LoginScreen(),
-                                          ),
+                                              builder: (_) => const LoginScreen()),
                                         );
                                       },
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(
-                                    0xFF2D7868,
-                                  ), // Deep Green
+                                  foregroundColor: const Color(0xFF2D7868),
                                   side: const BorderSide(
-                                    color: Color(0xFF2D7868), // Deep Green
+                                    color: Color(0xFF2D7868),
                                     width: 1.5,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 15,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -320,12 +322,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
-          color: Color(0xFF2D7868), // Deep Green
+          color: Color(0xFF2D7868),
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: Icon(icon, color: const Color(0xFF2D7868)), // Deep Green
+        prefixIcon: Icon(icon, color: const Color(0xFF2D7868)),
         filled: true,
-        fillColor: const Color(0xFFF5F5F5), // Light gray
+        fillColor: const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

@@ -25,7 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:5000/api/auth/login'), // Correct endpoint
+          Uri.parse(
+            'https://healthhabit.onrender.com/api/auth/login',
+          ), // Correct endpoint
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'email': _emailController.text,
