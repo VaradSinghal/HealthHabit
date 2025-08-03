@@ -39,6 +39,9 @@ dependencies:
   permission_handler: ^12.0.1
   shared_preferences: ^2.5.3
   json_annotation: ^4.9.0
+  google_fonts: ^6.3.0
+  intl: ^0.20.2
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +65,7 @@ flutter:
     - assets/images/welcome.png
     - assets/images/health.png
     - assets/images/badge.png
+    - assets/images/logo.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

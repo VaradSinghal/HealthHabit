@@ -1,3 +1,4 @@
+import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_profile.g.dart';
@@ -74,15 +75,18 @@ class Badge {
   final String name;
   final String? description;
   final DateTime earnedDate;
+  final int iconCode;
 
   Badge({
     required this.userId,
     required this.name,
     this.description,
     required this.earnedDate,
+    required this.iconCode,
   });
 
   factory Badge.fromJson(Map<String, dynamic> json) => _$BadgeFromJson(json);
-
   Map<String, dynamic> toJson() => _$BadgeToJson(this);
+
+  IconData get icon => IconData(iconCode, fontFamily: 'MaterialIcons');
 }

@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/onboarding.dart';
-import 'screens/login.dart';
+import 'package:healthhabit/screens/auth/login_screen.dart';
+import 'package:healthhabit/screens/onboarding/onboarding_screen.dart';
+import 'package:healthhabit/services/shared_prefs.dart';
+import 'package:healthhabit/utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final bool hasCompletedOnboarding = prefs.getBool('onboarding_completed') ?? false;
-
-  runApp(MyApp(hasCompletedOnboarding: hasCompletedOnboarding));
+  final onboardingCompleted = await SharedPrefs().isOnboardingCompleted();
+  
+  runApp(MyApp(
+    onboardingCompleted: onboardingCompleted,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  final bool hasCompletedOnboarding;
-
-  const MyApp({Key? key, required this.hasCompletedOnboarding}) : super(key: key);
+  final bool onboardingCompleted;
+  
+  const MyApp({Key? key, required this.onboardingCompleted}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Health Habit',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: hasCompletedOnboarding ? const LoginScreen() : const OnboardingScreen(),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: onboardingCompleted ? LoginScreen() : OnboardingScreen(),
     );
   }
 }

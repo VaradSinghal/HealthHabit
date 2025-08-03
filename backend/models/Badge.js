@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 
 const badgeSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
-  description: String,
-  earnedDate: { type: Date, default: Date.now },
+  description: { type: String, required: true },
+  icon: { type: String, required: true },
+  criteria: {
+    activityType: { type: String, required: true },
+    threshold: { type: Number, required: true }
+  }
 });
 
 module.exports = mongoose.model('Badge', badgeSchema);

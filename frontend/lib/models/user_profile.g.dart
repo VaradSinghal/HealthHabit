@@ -60,6 +60,7 @@ Badge _$BadgeFromJson(Map<String, dynamic> json) => Badge(
   name: json['name'] as String,
   description: json['description'] as String?,
   earnedDate: DateTime.parse(json['earnedDate'] as String),
+  iconCode: (json['iconCode'] as num).toInt(),
 );
 
 Map<String, dynamic> _$BadgeToJson(Badge instance) => <String, dynamic>{
@@ -67,4 +68,5 @@ Map<String, dynamic> _$BadgeToJson(Badge instance) => <String, dynamic>{
   'name': instance.name,
   'description': instance.description,
   'earnedDate': instance.earnedDate.toIso8601String(),
+  'iconCode': instance.iconCode,
 };
