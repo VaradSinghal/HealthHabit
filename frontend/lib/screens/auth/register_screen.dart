@@ -33,11 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0C2521),
-              Color(0xFF2D7868),
-              Color(0xFFA2DCA3),
-            ],
+            colors: [Color(0xFF0C2521), Color(0xFF2D7868), Color(0xFFA2DCA3)],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
@@ -62,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           blurRadius: 4.0,
                           color: Colors.black45,
                           offset: Offset(2, 2),
-                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -172,7 +168,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   backgroundColor: const Color(0xFF64B39A),
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 16),
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -187,8 +184,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           strokeWidth: 2,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                            Colors.white,
-                                          ),
+                                                Colors.white,
+                                              ),
                                         ),
                                       )
                                     : const Text(
@@ -223,7 +220,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     width: 1.5,
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 15),
+                                    vertical: 15,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -284,10 +282,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: Color(0xFF7CCE97),
-            width: 1.5,
-          ),
+          borderSide: const BorderSide(color: Color(0xFF7CCE97), width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 16,

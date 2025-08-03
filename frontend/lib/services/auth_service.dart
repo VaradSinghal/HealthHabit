@@ -60,8 +60,6 @@ class AuthService {
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
 
-      print('Registration Response: ${response.statusCode} - ${response.body}');
-
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         return responseData;
@@ -70,7 +68,6 @@ class AuthService {
         throw Exception(errorData['message'] ?? 'Registration failed');
       }
     } catch (e) {
-      print('Registration Error: $e');
       throw Exception('Failed to connect to server');
     }
   }

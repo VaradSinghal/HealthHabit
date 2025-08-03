@@ -47,9 +47,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final buttonAreaHeight = screenHeight * 0.15; // Space for bottom buttons
+
     return Scaffold(
       body: Stack(
         children: [
+          // Background with gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -61,6 +65,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
+          ),
+
+          // Page content
+          Padding(
+            padding: EdgeInsets.only(bottom: buttonAreaHeight),
             child: PageView.builder(
               controller: _pageController,
               itemCount: _pages.length,
@@ -68,8 +77,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               itemBuilder: (context, index) => _buildPage(_pages[index]),
             ),
           ),
-          _buildIndicators(),
-          _buildNavigationButtons(),
+
+          // Indicators
+          Positioned(
+            bottom: buttonAreaHeight - 20, // Position above buttons
+            left: 0,
+            right: 0,
+            child: _buildIndicators(),
+          ),
+
+          // Navigation buttons
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: buttonAreaHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: _buildNavigationButtons(),
+            ),
+          ),
         ],
       ),
     );
@@ -81,26 +108,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: Image.asset(page.image, fit: BoxFit.contain)),
-          const SizedBox(height: 40),
-          Text(
-            page.title,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
+          // Image takes 60% of available space
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Image.asset(page.image, fit: BoxFit.contain),
           ),
-          const SizedBox(height: 20),
-          Text(
-            page.description,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              height: 1.6,
-            ),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 32),
+          // Text content
+          Column(
+            children: [
+              Text(
+                page.title,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  page.description,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -108,76 +148,74 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildIndicators() {
-    return Positioned(
-      bottom: 120,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _pages.map((page) {
-          int index = _pages.indexOf(page);
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: _currentPage == index ? 24 : 8,
-            height: 8,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: _currentPage == index
-                  ? Colors.white
-                  : Colors.white.withOpacity(0.5),
-            ),
-          );
-        }).toList(),
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: _pages.map((page) {
+        int index = _pages.indexOf(page);
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: _currentPage == index ? 24 : 8,
+          height: 8,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: _currentPage == index
+                ? Colors.white
+                : Colors.white.withOpacity(0.5),
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildNavigationButtons() {
-    return Positioned(
-      bottom: 40,
-      left: 20,
-      right: 20,
-      child: _currentPage == _pages.length - 1
-          ? ElevatedButton(
-              onPressed: _completeOnboarding,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+    return _currentPage == _pages.length - 1
+        ? ElevatedButton(
+            onPressed: _completeOnboarding,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                'Get Started',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: _pages[_currentPage].color,
-                ),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: _skipOnboarding,
-                  child: const Text(
-                    'Skip',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-                FloatingActionButton(
-                  onPressed: _nextPage,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: _pages[_currentPage].color,
-                  ),
-                ),
-              ],
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              minimumSize: const Size(double.infinity, 50),
             ),
-    );
+            child: Text(
+              'Get Started',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: _pages[_currentPage].color,
+              ),
+            ),
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: _skipOnboarding,
+                style: TextButton.styleFrom(padding: const EdgeInsets.all(16)),
+                child: const Text(
+                  'Skip',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              FloatingActionButton(
+                onPressed: _nextPage,
+                backgroundColor: Colors.white,
+                elevation: 4,
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: _pages[_currentPage].color,
+                  size: 28,
+                ),
+              ),
+            ],
+          );
   }
 
   void _nextPage() {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:healthhabit/screens/auth/register_screen.dart';
-import 'package:healthhabit/screens/dashboard.dart';
 import 'package:healthhabit/screens/home_screen.dart';
 import 'package:healthhabit/services/auth_service.dart';
 
@@ -278,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text.trim(),
         );
 
-        // Navigate to home screen on success
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
